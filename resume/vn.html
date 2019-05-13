@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Resume: Huỳnh Thanh Toàn</title>
+    <title>Resume | Thanh Toàn</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
@@ -17,71 +17,91 @@
 </head>
 
 <body>
-    <div id="app" class="container my-4">
-        <div class="card">
-            <div class="card-body bg-white p-5">
-                <div class="row mt-4">
-					<div class="col-lg-2 col-md-3 col-sm-4 mb-4 mb-sm-0">
-						<img class="img-fluid" style="border-radius: 50%" src="img/photo.jpg" alt="photo">
-					</div>
-					
-					<div class="col-lg-10 col-md-9 col-sm-8">
-					     <div class="h1 font-bold">{{personal.name}}</div>
-						<div class="lead mb-2">{{personal.profession}}</div>
-						<div class="text-justify">{{personal.info}}</div>
-					</div>
-				</div>
-				
-                <div class="row mt-4">
-                    <div class="col-lg-4">
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-user-tie mr-3"></i>{{personal.header}}</div>
-                            <div v-if="personal.email" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-envelope mr-3"></i>{{personal.email}}</div>
-                            <div v-if="personal.phone" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-phone mr-3"></i>{{personal.phone}}</div>
-                            <div v-if="personal.address" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-map-marker-alt mr-3"></i>{{personal.address}}</div>
-                            <div v-if="personal.birthdate" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-birthday-cake mr-3"></i>{{personal.birthdate}}</div>
-                        </div>
+<div id="app" class="container my-4">
+    <div class="card">
+        <div class="card-body bg-white p-5">
+            <div class="row mt-4">
+                <div class="col-lg-2 col-md-3 col-sm-4 mb-4 mb-sm-0">
+                    <img class="img-fluid" style="border-radius: 50%" src="img/photo.jpg" alt="photo">
+                </div>
 
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-laptop-code mr-3"></i>{{programming.header}}</div>
-                            <div v-for="i in programming.data" class="mb-2 clear-fix ml-3 ml-lg-0">{{i.title}}<span class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span></div>
-                        </div>
+                <div class="col-lg-10 col-md-9 col-sm-8">
+                    <div class="h1 font-bold">{{personal.name}}</div>
+                    <div class="lead mb-2">{{personal.profession}}</div>
+                    <div class="text-justify">{{personal.info}}</div>
+                </div>
+            </div>
 
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-puzzle-piece mr-3"></i>{{skill.header}}</div>
-                            <div v-for="i in skill.data" class="mb-2 clear-fix ml-3 ml-lg-0">{{i.title}}<span class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span></div>
+            <div class="row mt-4">
+                <div class="col-lg-4">
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-user-tie mr-3"></i>{{personal.header}}
+                        </div>
+                        <div v-if="personal.email" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-envelope mr-3"></i>{{personal.email}}
+                        </div>
+                        <div v-if="personal.phone" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-phone mr-3"></i>{{personal.phone}}
+                        </div>
+                        <div v-if="personal.address" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-map-marker-alt mr-3"></i>{{personal.address}}
+                        </div>
+                        <div v-if="personal.birthdate" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-birthday-cake mr-3"></i>{{personal.birthdate}}
+                        </div>
+                        <div v-if="personal.github" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fab fa-github mr-3"></i><a :href="personal.github">{{personal.github}}</a>
                         </div>
                     </div>
 
-                    <div class="col-lg-8">
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-flag mr-3"></i>{{goal.header}}</div>
-                            <div v-for="i in goal.data" class="ml-3 mb-3 clear-fix">
-                                <div class="font-bold">{{i.title}}</div>
-                                <div class="text-justify">{{i.info}}</div>
-                            </div>
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
+                                class="fas fa-laptop-code mr-3"></i>{{programming.header}}
                         </div>
-
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-briefcase mr-3"></i>{{experience.header}}</div>
-                            <div v-for="i in experience.data" class="ml-3 mb-3 clear-fix">
-                                <div class="font-bold">{{i.title}}</div>
-                                <div class="text-justify">{{i.info}}</div>
-                            </div>
+                        <div v-for="i in programming.data" class="mb-2 clear-fix ml-3 ml-lg-0">{{i.title}}<span
+                                class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span>
                         </div>
+                    </div>
 
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-graduation-cap mr-3"></i>{{education.header}}</div>
-                            <div v-for="i in education.data" class="ml-3 mb-3 clear-fix">
-                                <div class="font-bold">{{i.title}}</div>
-                                <div class="text-justify">{{i.info}}</div>
-                            </div>
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
+                                class="fas fa-puzzle-piece mr-3"></i>{{skill.header}}
+                        </div>
+                        <div v-for="i in skill.data" class="mb-2 clear-fix ml-3 ml-lg-0">{{i.title}}<span
+                                class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-flag mr-3"></i>{{goal.header}}
+                        </div>
+                        <div v-for="i in goal.data" class="ml-3 mb-3 clear-fix">
+                            <div class="font-bold">{{i.title}}</div>
+                            <div class="text-justify">{{i.info}}</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
+                                class="fas fa-briefcase mr-3"></i>{{experience.header}}
+                        </div>
+                        <div v-for="i in experience.data" class="ml-3 mb-3 clear-fix">
+                            <div class="font-bold">{{i.title}}</div>
+                            <div class="text-justify">{{i.info}}</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
+                                class="fas fa-graduation-cap mr-3"></i>{{education.header}}
+                        </div>
+                        <div v-for="i in education.data" class="ml-3 mb-3 clear-fix">
+                            <div class="font-bold">{{i.title}}</div>
+                            <div class="text-justify">{{i.info}}</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </body>
 
 <script>
@@ -97,50 +117,60 @@
                 address: '19E4, Trần Huy Liệu, P. Mỹ Quý, TP. Long Xuyên, An Giang',
                 phone: '034 475 4599',
                 email: 'thanhtoan.inu@gmail.com',
+                github: 'github.com/luehtt'
             },
             goal: {
-                header: 'Mục tiêu phấn đấu',
+                header: 'Mục tiêu',
                 data: [
-                    { title: '', info: 'Sau khi hoàn tất chương trình đại học, một công việc ổn định có liên quan đến mảng lập trình web hoặc di động là mục tiêu đầu tiên của tôi để học tập kinh nghiệm làm việc trong môi trường doanh nghiệp. Ngoài việc trau dồi kiến thức đã có, tôi mong muốn được tìm hiểu chuyên sâu mảng lập trình web, di động, cũng như các công nghệ mới hiện tại như IOT, Blockchain. Trở thành một lập trình viên chuyên nghiệp, có thể tham gia bất kì dự án, hoàn thành tốt bất kì nhiệm vụ trong lĩnh vực của mình là mục tiêu phấn đấu của tôi. Ngoài ra, tôi có sở thích tự lập trình các ứng dụng để tăng năng suất lập trình của bản thân, cũng như mong muốn được học thêm tiếng Nhật để có thể sử dụng tốt như tiếng Anh của tôi.' },
+                    {
+                        title: '',
+                        info: 'Sau khi hoàn tất chương trình đại học, một công việc ổn định có liên quan đến mảng lập trình web hoặc di động là mục tiêu đầu tiên của tôi để học tập kinh nghiệm làm việc trong môi trường doanh nghiệp. Ngoài việc trau dồi kiến thức đã có, tôi mong muốn được tìm hiểu chuyên sâu mảng lập trình web, di động, cũng như các công nghệ mới hiện tại như IOT, Blockchain. Trở thành một lập trình viên chuyên nghiệp, có thể tham gia bất kì dự án, hoàn thành tốt bất kì nhiệm vụ trong lĩnh vực của mình là mục tiêu phấn đấu của tôi. Ngoài ra, tôi có sở thích tự lập trình các ứng dụng để tăng năng suất lập trình của bản thân, cũng như mong muốn được học thêm tiếng Nhật để có thể sử dụng tốt như tiếng Anh của tôi.'
+                    },
                 ]
             },
             programming: {
                 header: 'Lập trình',
                 data: [
-                    { title: 'Cấu trúc dữ liệu', rate: 3 },
-                    { title: 'Cơ sở dữ liệu', rate: 4},
-                    { title: 'PHP / Laravel', rate: 4},
-                    { title: 'JSP / Spring Boot', rate: 4},
-                    { title: 'Node.js / Adonis.js', rate: 4}
+                    {title: 'Cấu trúc dữ liệu', rate: 3},
+                    {title: 'Cơ sở dữ liệu', rate: 4},
+                    {title: 'PHP / Laravel', rate: 4},
+                    {title: 'JSP / Spring Boot', rate: 4},
+                    {title: 'Node.js / Adonis.js', rate: 4}
                 ]
             },
             skill: {
                 header: 'Kỹ năng',
                 data: [
-                    { title: 'Tự học', rate: 5 },
-                    { title: 'Chịu áp lực', rate: 3},
-                    { title: 'Làm việc nhóm', rate: 4},
-                    { title: 'Thiết kế', rate: 4}
+                    {title: 'Tự học', rate: 5},
+                    {title: 'Chịu áp lực', rate: 3},
+                    {title: 'Làm việc nhóm', rate: 4},
+                    {title: 'Thiết kế', rate: 4}
                 ]
             },
             experience: {
                 header: 'Kinh nghiệm',
                 data: [
-                    { title: '2013-2014', info: 'Làm việc tại Cửa hàng linh kiện, sửa chữa, lắp đặt mạng Tin học An Giang'},
-                    { title: '2015-2019', info: 'Học tập tại trường Đại học An Giang, chuyên ngành Công nghệ thông tin chính quy'},
+                    {
+                        title: '2013-2014',
+                        info: 'Làm việc tại Cửa hàng linh kiện, sửa chữa, lắp đặt mạng'
+                    },
+                    {
+                        title: '2015-2019',
+                        info: 'Học tập tại trường Đại học An Giang, chuyên ngành Công nghệ thông tin chính quy'
+                    },
                 ]
             },
             education: {
                 header: 'Học tập',
                 data: [
-                    { title: 'Năm nhất', info: 'Java, JavaFX, Cấu trúc dữ liệu,  Java collections, Lambda' },
-                    { title: 'Năm hai', info: 'C#, WPF, Cơ sở dữ liệu, DBMS, ORM, Kiến trúc MVVM' },
-                    { title: 'Năm ba', info: 'PHP, Laravel, Bootstrap, Vue.js, Kiến trúc MVC' },
-                    { title: 'Năm tư', info: 'RESTful, Single page application, JSP, Spring Boot, Node.js, Adonis.js' },
+                    {title: 'Năm nhất', info: 'Java, JavaFX, Cấu trúc dữ liệu,  Java collections, Lambda'},
+                    {title: 'Năm hai', info: 'C#, WPF, Cơ sở dữ liệu, DBMS, ORM, Kiến trúc MVVM'},
+                    {title: 'Năm ba', info: 'PHP, Laravel, Bootstrap, Vue.js, Kiến trúc MVC'},
+                    {title: 'Năm tư', info: 'RESTful, Single page application, JSP, Spring Boot, Node.js, Adonis.js'},
                 ]
             },
-            lightColors: ['#ff4444','#4285f4','#00c851','#2bbbad','#ffbb33','#33b5e5','#aa66cc','#37474f'],
-            colors: ['#cc0000','#0d47a1','#007e33','#00695c','#ff8800','#0099cc','#9933cc','#263238'],
+            lightColors: ['#ff4444', '#4285f4', '#00c851', '#2bbbad', '#ffbb33', '#33b5e5', '#aa66cc', '#37474f'],
+            colors: ['#cc0000', '#0d47a1', '#007e33', '#00695c', '#ff8800', '#0099cc', '#9933cc', '#263238'],
         },
     })
 </script>
