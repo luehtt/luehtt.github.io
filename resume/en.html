@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Resume: Huynh Thanh Toan</title>
+    <title>Resume | Thanh Toan</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
@@ -17,71 +17,91 @@
 </head>
 
 <body>
-    <div id="app" class="container my-4">
-        <div class="card">
-            <div class="card-body bg-white p-5">
-				<div class="row mt-4">
-					<div class="col-lg-2 col-md-3 col-sm-4 mb-4 mb-sm-0">
-						<img class="img-fluid" style="border-radius: 50%" src="img/photo.jpg" alt="photo">
-					</div>
-					
-					<div class="col-lg-10 col-md-9 col-sm-8">
-					     <div class="h1 font-bold">{{personal.name}}</div>
-						<div class="lead mb-2">{{personal.profession}}</div>
-						<div class="text-justify">{{personal.info}}</div>
-					</div>
-				</div>
-				
-                <div class="row mt-4">
-                    <div class="col-lg-4">
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-user-tie mr-3"></i>{{personal.header}}</div>
-                            <div v-if="personal.email" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-envelope mr-3"></i>{{personal.email}}</div>
-                            <div v-if="personal.phone" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-phone mr-3"></i>{{personal.phone}}</div>
-                            <div v-if="personal.address" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-map-marker-alt mr-3"></i>{{personal.address}}</div>
-                            <div v-if="personal.birthdate" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-birthday-cake mr-3"></i>{{personal.birthdate}}</div>
-                        </div>
+<div id="app" class="container my-4">
+    <div class="card">
+        <div class="card-body bg-white p-5">
+            <div class="row mt-4">
+                <div class="col-lg-2 col-md-3 col-sm-4 mb-4 mb-sm-0">
+                    <img class="img-fluid" style="border-radius: 50%" src="img/photo.jpg" alt="photo">
+                </div>
 
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-laptop-code mr-3"></i>{{programming.header}}</div>
-                            <div v-for="i in programming.data" class="mb-2 clear-fix ml-3 ml-lg-0">{{i.title}}<span class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span></div>
-                        </div>
+                <div class="col-lg-10 col-md-9 col-sm-8">
+                    <div class="h1 font-bold">{{personal.name}}</div>
+                    <div class="lead mb-2">{{personal.profession}}</div>
+                    <div class="text-justify">{{personal.info}}</div>
+                </div>
+            </div>
 
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-puzzle-piece mr-3"></i>{{skill.header}}</div>
-                            <div v-for="i in skill.data" class="mb-2 clear-fix ml-3 ml-lg-0">{{i.title}}<span class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span></div>
+            <div class="row mt-4">
+                <div class="col-lg-4">
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-user-tie mr-3"></i>{{personal.header}}
+                        </div>
+                        <div v-if="personal.email" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-envelope mr-3"></i>{{personal.email}}
+                        </div>
+                        <div v-if="personal.phone" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-phone mr-3"></i>{{personal.phone}}
+                        </div>
+                        <div v-if="personal.address" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-map-marker-alt mr-3"></i>{{personal.address}}
+                        </div>
+                        <div v-if="personal.birthdate" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-birthday-cake mr-3"></i>{{personal.birthdate}}
+                        </div>
+                        <div v-if="personal.github" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fab fa-github mr-3"></i><a :href="personal.github">{{personal.github}}</a>
                         </div>
                     </div>
 
-                    <div class="col-lg-8">
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-flag mr-3"></i>{{goal.header}}</div>
-                            <div v-for="i in goal.data" class="ml-3 mb-3 clear-fix">
-                                <div class="font-bold">{{i.title}}</div>
-                                <div class="text-justify">{{i.info}}</div>
-                            </div>
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
+                                class="fas fa-laptop-code mr-3"></i>{{programming.header}}
                         </div>
-
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-briefcase mr-3"></i>{{experience.header}}</div>
-                            <div v-for="i in experience.data" class="ml-3 mb-3 clear-fix">
-                                <div class="font-bold">{{i.title}}</div>
-                                <div class="text-justify">{{i.info}}</div>
-                            </div>
+                        <div v-for="i in programming.data" class="mb-2 clear-fix ml-3 ml-lg-0">{{i.title}}<span
+                                class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span>
                         </div>
+                    </div>
 
-                        <div class="mb-4">
-                            <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-graduation-cap mr-3"></i>{{education.header}}</div>
-                            <div v-for="i in education.data" class="ml-3 mb-3 clear-fix">
-                                <div class="font-bold">{{i.title}}</div>
-                                <div class="text-justify">{{i.info}}</div>
-                            </div>
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
+                                class="fas fa-puzzle-piece mr-3"></i>{{skill.header}}
+                        </div>
+                        <div v-for="i in skill.data" class="mb-2 clear-fix ml-3 ml-lg-0">{{i.title}}<span
+                                class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-flag mr-3"></i>{{goal.header}}
+                        </div>
+                        <div v-for="i in goal.data" class="ml-3 mb-3 clear-fix">
+                            <div class="font-bold">{{i.title}}</div>
+                            <div class="text-justify">{{i.info}}</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
+                                class="fas fa-briefcase mr-3"></i>{{experience.header}}
+                        </div>
+                        <div v-for="i in experience.data" class="ml-3 mb-3 clear-fix">
+                            <div class="font-bold">{{i.title}}</div>
+                            <div class="text-justify">{{i.info}}</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
+                                class="fas fa-graduation-cap mr-3"></i>{{education.header}}
+                        </div>
+                        <div v-for="i in education.data" class="ml-3 mb-3 clear-fix">
+                            <div class="font-bold">{{i.title}}</div>
+                            <div class="text-justify">{{i.info}}</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </body>
 
 <script>
@@ -92,55 +112,63 @@
             personal: {
                 header: 'Personal Info',
                 name: 'Huynh Thanh Toan',
-                info: 'Hello, I am a graduated student from An Giang University, major Information Techonology. I have take parts in many programming projects from desktop. The more challenging the project, the more interesting it brings. I specialized interested in web development, UI/UX designs, latest technologies. At the moment, I am looking for a job related to programming.',
+                info: 'Hello, I am a graduated student from An Giang University, major Information Technology. I have take parts in many programming projects from desktop. The more challenging the project, the more interesting it brings. I specialized interested in web development, UI/UX designs, latest technologies. At the moment, I am looking for a job related to programming.',
                 profession: 'Fresher Web Programmer',
-                address: '19E4, Tran Huy Lieu, My Quy, Long Xuyên city, An Giang',
+                address: '19E4, Tran Huy Lieu, My Quy, Long Xuyen city, An Giang',
                 phone: '034 475 4599',
                 email: 'thanhtoan.inu@gmail.com',
+                github: 'github.com/luehtt'
             },
             goal: {
                 header: 'Goal',
                 data: [
-                    { title: '', info: 'After graduated from university, a job related to web or mobile programming is my first goal so that I can expierience business work environment. I do not intend to learn more about web and mobile programming, but also about latest techonology such as IOT and blockchain to become more and more adept. Proficient programmer that can join any projects and complete any task is my long-term goal. Besides, I like to make personal app that help me more productivity and learn Japanese more so that I can use it as good as my English.' },
+                    {
+                        title: '',
+                        info: 'After graduated from university, a job related to web or mobile programming is my first goal so that I can experience business work environment. I do not intend to learn more about web and mobile programming, but also about latest technology such as IOT and Blockchain to become more and more adept. Proficient programmer that can join any projects and complete any task is my long-term goal. Besides, I like to make personal app that help me more productivity and learn Japanese more so that I can use it as good as my English. '
+                    },
                 ]
             },
             programming: {
                 header: 'Programming',
                 data: [
-                    { title: 'Data struture', rate: 3 },
-                    { title: 'Data analysis', rate: 4},
-                    { title: 'PHP / Laravel', rate: 4},
-                    { title: 'JSP / Spring Boot', rate: 4},
-                    { title: 'Node.js / Adonis.js', rate: 4}
+                    {title: 'Data structure', rate: 3},
+                    {title: 'Data analysis', rate: 4},
+                    {title: 'PHP / Laravel', rate: 4},
+                    {title: 'JSP / Spring Boot', rate: 4},
+                    {title: 'Node.js / Adonis.js', rate: 4}
                 ]
             },
             skill: {
                 header: 'Skills',
                 data: [
-                    { title: 'Self teaching', rate: 5 },
-                    { title: 'Under pressure', rate: 3},
-                    { title: 'Group working', rate: 4},
-                    { title: 'Design', rate: 4}
+                    {title: 'Self study', rate: 5},
+                    {title: 'Work Under pressure', rate: 3},
+                    {title: 'Group working', rate: 4},
+                    {title: 'Adaptability & Flexibility', rate: 4},
+                    {title: 'Analytical & Solving', rate: 4}
                 ]
             },
             experience: {
                 header: 'Experience',
                 data: [
-                    { title: '2013-2014', info: 'Work at "Tin hoc An Giang" computer store that repairs hardware, installs network, sells computer component'},
-                    { title: '2015-2019', info: 'Study at An Giang University, major Information Techonology'},
+                    {
+                        title: '2013-2014',
+                        info: 'Work at local computer store that repairs hardware, installs network, sells component.'
+                    },
+                    {title: '2015-2019', info: 'Study at An Giang University, major Information Technology'},
                 ]
             },
             education: {
                 header: 'Education',
                 data: [
-                    { title: 'Năm nhất', info: 'Java, JavaFX, Data struture,  Java collections, Lambda' },
-                    { title: 'Năm hai', info: 'C#, WPF, Data analysis, DBMS, ORM, MVVM pattern' },
-                    { title: 'Năm ba', info: 'PHP, Laravel, Bootstrap, Vue.js, MVC pattern' },
-                    { title: 'Năm tư', info: 'RESTful, Single page application, JSP, Spring Boot, Node.js, Adonis.js' },
+                    {title: 'First year', info: 'Java, JavaFX, Data structure,  Java collections, Lambda'},
+                    {title: 'Second year', info: 'C#, WPF, Data analysis, DBMS, ORM, MVVM pattern'},
+                    {title: 'Third year', info: 'PHP, Laravel, Bootstrap, Vue.js, MVC pattern'},
+                    {title: 'Last year', info: 'RESTful, Single page application, JSP, Spring Boot, Node.js, Adonis.js'},
                 ]
             },
-            lightColors: ['#ff4444','#4285f4','#00c851','#2bbbad','#ffbb33','#33b5e5','#aa66cc','#37474f'],
-            colors: ['#cc0000','#0d47a1','#007e33','#00695c','#ff8800','#0099cc','#9933cc','#263238'],
+            lightColors: ['#ff4444', '#4285f4', '#00c851', '#2bbbad', '#ffbb33', '#33b5e5', '#aa66cc', '#37474f'],
+            colors: ['#cc0000', '#0d47a1', '#007e33', '#00695c', '#ff8800', '#0099cc', '#9933cc', '#263238'],
         },
     })
 </script>
