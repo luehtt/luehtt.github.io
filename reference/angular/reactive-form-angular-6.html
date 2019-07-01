@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+l<!DOCTYPE html>
 <html>
 <title>How to use Angular 6 Reactive form</title>
-<xmp theme="spacelab" style="display:none;">
+<xmp theme="cerulean" style="display:none;">
 
 # How to use Angular 6 Reactive form
 
@@ -98,22 +98,4 @@ onSummit() {
     
     let item = {
         username = this.form.controls.username.value;
-        email = this.form.controls.email.value;
-        address = this.form.controls.address.value;
-    }
     
-    // this service calling is just example on posting new item
-    this.service.post(item).then(res => {
-        // codes on success
-    })
-    .catch(err => {
-        // codes on error
-    });
-}
-```
-
-</xmp>
-
-<script src="https://cdn.jsdelivr.net/gh/Naereen/StrapDown.js@master/strapdown.min.js"></script>
-</html>
-
