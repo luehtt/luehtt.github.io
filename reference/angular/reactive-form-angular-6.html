@@ -5,10 +5,14 @@
 
 # How to use Angular 6 Reactive form
 
+Read more: [Reactive form](https://angular.io/guide/reactive-forms)
+Read more: [Template-driven forms](https://angular.io/guide/forms)
+Read more: [Form Validation](https://angular.io/guide/form-validation)
+  
 Reactive forms provide a model-driven approach to handling form inputs whose values change over time. This guide shows you how to create and update a simple form control, progress to using multiple controls in a group, validate form values, and implement more advanced forms.
 
 ### Step 1: Register the reactive forms module
-To use reactive forms, import **ReactiveFormsModule** from the **@angular/forms** package and add it to **app.module.ts** imports array.
+To use reactive forms, import **ReactiveFormsModule** from the **@angular/forms** package and add it to **app.module.ts** imports.
 ```
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -25,8 +29,8 @@ export class AppModule { }
 ```
 
 ### Step 2: Open the component and declare form and formBuilder
-The **FormControl** class is the basic building block when using reactive forms. To register a single form control, import the **FormBuilder**, **FormGroup**, **Validators** class into your component and create a new instance of the form control to save as a class property.
-In this example, the form consists of 5 form controls, namely username, email, birthdate, and phone. The username, email, and birthdate form controls are **required**.
+The **FormControl** class is the basic building block when using reactive forms. To register a single form control, import the **FormControl** into the component... :sunglasses:. Let's import **FormBuilder**, **FormGroup**, and **Validators** classes instead to group these invidual form control into a group.
+In this example, the form consists of 3 controls, namely username, email, and phone. The username and email fields are **required**.
 ```
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -46,8 +50,8 @@ export class ReactiveFormComponent implements OnInit {
 ```
 
 ### Step 3: Open the view and construct the form in html
-After you create the control in the component class, you must associate it with a form control element in the template. Update the template with the form control using the formControl binding provided by **FormControlDirective** included in **ReactiveFormsModule**.
-For each form controls, there is a **error** div right after to hinder the user on submit.
+After we create the control in the component class, we must associate it with a form control element in the template. 
+For each form controls, we also add **error** element right after to hinder the user on submit.
 ```
 <form *ngIf="form" [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-group row">
@@ -86,7 +90,7 @@ For each form controls, there is a **error** div right after to hinder the user 
 </form>
 ```
 ### Step 4: Get form controls value and submit
-Before submitting the form controls value to the server, the **Validators** must confirm all the form controls are valid. The **touched** properties after the form control name is to mark if the user omit the field or else all the form controls are marked danger as invaid at initial stage before user can actually touch the field. Therefore, on validating the form, we must touch all field so that they are marked touched.
+Before submitting the data to the server, the **Validators** must confirm that all the controls are valid. The **touched** properties after the form control name is to mark if the user omit the field. Otherwise all the form controls are marked invalid at initial stage before user can actually touch the field. Then again, on validating the form, we must touch all field so that they are marked touched.
 ```
 onSummit() {
     if (this.form.invalid) {
