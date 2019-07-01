@@ -98,8 +98,21 @@ onSummit() {
     
     let item = {
         username = this.form.controls.username.value;
+        email = this.form.controls.email.value;
+        address = this.form.controls.address.value;
+    }
+    
+    // this service calling is just example on posting new item
+    this.service.post(item).then(res => {
+        // codes on success
+    })
+    .catch(err => {
+        // codes on error
+    });
+}
 ```
+
 </xmp>
 
-<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Naereen/StrapDown.js@master/strapdown.min.js"></script>
 </html>
