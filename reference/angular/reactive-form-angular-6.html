@@ -55,6 +55,20 @@ export class ReactiveFormComponent implements OnInit {
   }
 }
 ```
+To set the value, simply call method **setValue()** or we can set the value to the form in ngOnInit().
+```
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+...
+export class ReactiveFormComponent implements OnInit {
+    form: FormGroup;
+    ...
+    setData(data) {
+        this.form.controls.username.setValue(data.username)
+        this.form.controls.email.setValue(data.email)
+        this.form.controls.phone.setValue(data.phone)
+    }
+}
+```
 
 ### Step 3: Construct the form controls in HTML
 After we have declared the controls in the component class, we must associate them with form control elements in the template. 
