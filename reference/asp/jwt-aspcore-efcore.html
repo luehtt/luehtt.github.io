@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<title>Implement JWT authentication with bcrypt algorithm in ASP.NET Core</title>
+
+<style>
+	p {
+		text-align: justify !important;
+	}
+
+	.container {
+		font-size: 110% !important;
+	}
+</style>
+
+<xmp theme="united" style="display:none;">
+
+# Implement JWT authentication with bcrypt algorithm in ASP.NET Core
+
+Read more: [Tutorial](https://jasonwatmore.com/post/2018/08/14/aspnet-core-21-jwt-authentication-tutorial-with-example-api) and [Github Example](https://github.com/scottbrady91/ScottBrady91.AspNetCore.Identity.BCryptPasswordHasher)
+  
+[JWT](https://en.wikipedia.org/wiki/JSON_Web_Token) (JSON Web Tokens) are an open, industry standard [RFC 7519](https://tools.ietf.org/html/rfc7519) method for representing claims securely between two parties. This guide shows you how to implement JWT authentication with bcrypt algorithm in ASP.NET Core 2.2.
+
+### Step 1: Install Nuget-package BCrypt.Net-Next and implement IPasswordHasher
+[Bcrypt](https://en.wikipedia.org/wiki/Bcrypt) is a password hashing function designed by Niels Provos and David Mazières, based on the Blowfish cipher, and presented at USENIX in 1999. In this example, we use **[BCrypt.Net-Next](https://github.com/BcryptNet/bcrypt.net)** to implement **[IPasswordHasher](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.ipasswordhasher-1?view=aspnetcore-2.2)**. Use .NET CLI to install one version 3.X.X.
+Beside, don't forget the packages for **AspNetCore** and **EntityFrameworkCore**.
+```
+dotnet add package BCrypt.Net-Next --version 3.1.3
+```
+
+Next, let's create **BCryptPasswordHasher** and **BCryptPasswordHasherOptions** classes. The **BCryptPasswordHasherOptions** class holds the default options for BCryptPasswordHasher. The **BCryptPasswordHasher** holds the key methods form hashing and verifying passwords.
+```
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+...
+
+public class BCryptPasswordHasher<TUser> : IPasswordHasher<TUser> where TUser : class
+{
+    private BCryptPasswordHasherOptions options;
+
+    public BCryptPasswordHasher(IOptions<BCryptPasswordHasherOptions> options = null)
+    {
+        this.options = options?.Value ?? new BCryptPasswordHasherOptions();
+    }
+
+    public string HashPassword(TUser user, string password)
+    {
+        if (password == null) throw new ArgumentNullException(nameof(password));
+        return BCrypt.Net.BCrypt.HashPassword(password, options.WorkFactor, options.EnhancedEntropy);
+    }
+
+    public PasswordVerificationResult VerifyHashedPassword(TUser user, string hashedPassword, string providedPassword)
+    {
+        if (hashedPassword == null) throw new ArgumentNullException(nameof(hashedPassword));
+        if (providedPassword == null) throw new ArgumentNullException(nameof(providedPassword));
+
+        var isValid = BCrypt.Net.BCrypt.Verify(providedPassword, hashedPassword, options.EnhancedEntropy);
+        return isValid ? PasswordVerificationResult.Success : PasswordVerificationResult.Failed;
+    }
+}
+
+public class BCryptPasswordHasherOptions
+{
+    public int WorkFactor { get; set; } = 10;
+    public bool EnhancedEntropy { get; set; } = false;
+}
+```
+We can omit the **TUser** parameter since we don't really need it!! What we need is just password, hashed or raw.
+
+### Step 2: Create models for Login and Register
+In order to make thing go smooth, let's create 2 models for data transfer. The **LoginModel** class represents the data that user submit from the login page in client side. The **RegisterModel** class represents the data from the register page. For the moment, let's keep it simple...
+```
+public class LoginModel
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+}
+	
+public class RegisterModel
+{
+    public string Username { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
+}	
+```
+
+### Step 3: Create Controller for Login and Register
+Now that we have the bcrypt algorithm and the models, we can implement the controllers right away. First, let's make **RegisterController** that handle data from register page. In this examples, I have assumed that the **Entity Core** has been **up and running** well and there are 2 entities named **User** and **UserRole** in the database also.
+```
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+...
+[Route("api/register")]
+[ApiController]
+public class RegisterController : ControllerBase
+{
+    private IConfiguration config;
+    private readonly DataContext context;
+    private BCryptPasswordHasher<User> passwordHasher;
+
+    public RegisterController(DataContext context, IConfiguration config)
+    {
+        this.config = config;
+        this.context = context;
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    public IActionResult Post([FromBody]RegisterModel register)
+    {
+        var user = Register(register);
+        if (user == null) return Conflict();
+
+        return Ok();
+    }
+
+    private User Register(RegisterModel register)
+    {
+        // get account from database to check if email exists
+        var user_checking = context.Users.Where(x => x.Email == register.Email).FirstOrDefault();
+        if (user_checking != null) return null;
+
+        // hash password using bCrypt: just ignore the TUser parameter
+        passwordHasher = new BCryptPasswordHasher<User>();
+        var hassedPassword = passwordHasher.HashPassword(user_checking, register.Password);
+
+        // get default user role: can be admin, manager, customer, anonymous, whatever that have been pre-defined in the database
+        var user_role = context.UserRoles.Where(x => x.Name == "CUSTOMER").FirstOrDefault();
+        var user = new User()
+        {
+            Username = register.Username,
+            Email = register.Email,
+            Password = hassedPassword,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            UserRoleId = user_role.Id,
+            Active = true
+        };
+
+        try
+        {
+            context.Users.Add(user);
+            context.SaveChanges();
+            return user;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+	}
+}
+```
+
+Now that the RegisterController is done, we then make the **LoginController** similarly (copy and paste? not that easy). Since we are using **JWT** as the access token: when the user has posted email and password, the controller must first find that email in the database, verify the posted password and stored password, then return a access token to the client. If the process succeeded, the client can bear that token to access url that required authentication.
+```
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+...
+[Route("api/login")]
+[ApiController]
+public class LoginController : ControllerBase
+{
+    private IConfiguration config;
+    private readonly DataContext context;
+    private BCryptPasswordHasher<UserToken> passwordHasher;
+
+    public LoginController(DataContext context, IConfiguration config)
+    {
+        this.config = config;
+        this.context = context;
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    public IActionResult Post([FromBody]LoginModel login)
+    {
+        var user = Authenticate(login);
+        if (user == null) return Unauthorized();
+
+        var token = Generate(user);
+        return Ok(new { token = tokenString });
+    }
+
+    private UserToken Authenticate(LoginModel login)
+    {
+        // get account from database to check if email exists
+        var user = context.Users.Where(x => x.Email == login.Email).FirstOrDefault();
+        if (user == null) return null;
+            
+		// verify password using bCrypt: just ignore the TUser parameter again
+        passwordHasher = new BCryptPasswordHasher<User>();
+        var result = passwordHasher.VerifyHashedPassword(user, user.Password, login.Password);
+        if (result == PasswordVerificationResult.Failed) return null;
+
+        // get user role from database
+        var user_role = context.UserRoles.Find(user.UserRoleId);
+        return new UserToken
+        {
+            Username = user.Username,
+            Email = user.Email,
+            UserRole = user_role.Name
+        };
+	}
+
+    private string Generate(UserToken user)
+    {
+		// in this example, we only these basic properties
+        var claims = new[] {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.UserRole),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(config["Jwt:Issuer"],
+			config["Jwt:Issuer"],
+			claims,
+			expires: DateTime.Now.AddMinutes(30),
+			signingCredentials: creds);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+}
+```
+
+### Step 4: Register config and service
+Since that everything has been set up, we just need a few steps to run the application. First, open **appsetting.json** and add JWT config. The **Key** and **Issuer** can be anything; just make sure you remember them when coding client side.
+```
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "Jwt": {
+    "Key": "ZDJHPgmglq2JYOoxyXIyiJROvyIsvJ7K",
+    "Issuer": "http://localhost:4200/"
+  },
+  "AllowedHosts": "*"
+}
+```
+
+Second, open **Startup.cs** and add used services. In this example, we will also add default Cors for debugging.
+```
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+...
+
+public class Startup
+{
+	...
+	
+	public void ConfigureServices(IServiceCollection services)
+    {
+        // Set up Mvc return Json and ignore null value
+        services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+			.AddJsonOptions(options => {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            });
+
+		// Set up Entity framework: Postgresql in this case
+        services.AddEntityFrameworkNpgsql().AddDbContext<DataContext>().BuildServiceProvider();
+
+        // Register JWT authentication schema by using AddAuthentication method and specifying JwtBearerDefaults.AuthenticationScheme
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = Configuration["Jwt:Issuer"],
+                ValidAudience = Configuration["Jwt:Issuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+            };
+        });
+
+        // Set up CORS for your application add the Microsoft.AspNetCore.Cors package to your project
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowOrigin", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod() );
+        });
+    }
+	
+	// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    {
+        ...
+
+        // Add UseAuthentication to make the authentication service available to the application
+        app.UseAuthentication();
+
+        // Set up CORS for your application add the Microsoft.AspNetCore.Cors package to your project
+        app.UseCors("AllowOrigin");
+
+        app.UseHttpsRedirection();
+        app.UseMvc();
+    }
+}
+```
+
+### Step 5: Get Postman to work
+If you are familiar with [Postman](https://www.getpostman.com/), you are good to go. Else, let's see how the server get and reponse request from client. We first test the **RegisterController** with Postman: tell him to use **POST**, enter .NET localhost, something like **http://localhost:5000/api/register**, and pass **[Content-Type: application/json](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)** : in the **header** and this data as raw in the **body**.
+```
+{
+	'username': 'superadmin'
+	'email': 'superadmin@demo.com',
+	'password': 'password'
+}
+```
+
+If you received status **200 OK**, then open database and there the result with password in hashed string. Else review the previous steps :sad:. For the **LoginController**, enter this one in **http://localhost:5000/api/login**.
+```
+{
+	'email': 'superadmin@demo.com',
+	'password': 'password'
+}
+```
+If you received a status **200 OK** with the **token** or status **401 Unauthorized** with the message like below, then we are good. Else review the previous steps :sad::sad:
+```
+{
+    "type": "https://tools.ietf.org/html/rfc7235#section-3.1",
+    "title": "Unauthorized",
+    "status": 401,
+    "traceId": "800004dc-0005-fe00-b63f-84710c7967bb"
+}
+```
+
+After received access token, use that to **[Authorization: Bearer {token}](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)** to access [Authorize] Route in server!
+This concludes the tutorial to implement JWT authentication with bcrypt algorithm in ASP.NET Core.
+
+### More to do
+* Implement LoginController that accept either Username or Email.
+* Use [Argon2PasswordHasher](https://github.com/scottbrady91/ScottBrady91.AspNetCore.Identity.Argon2PasswordHasher) or [Scrypt](https://github.com/scottbrady91/ScottBrady91.AspNetCore.Identity.ScryptPasswordHasher) algorithm.
+
+</xmp>
+
+<script src="https://cdn.jsdelivr.net/gh/Naereen/StrapDown.js@master/strapdown.min.js"></script>
+</html>
