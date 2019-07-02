@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html>
-<title>How to use Angular 6 Reactive form</title>
+<title>Use Reactive form in Angular 6</title>
+
+<style>
+	p {
+		text-align: justify !important;
+	}
+
+	.container {
+		font-size: 110% !important;
+	}
+</style>
+
 <xmp theme="united" style="display:none;">
 
-# How to use Angular 6 Reactive form
+# Use Reactive Form in Angular 6
 
-Read more: [Reactive form](https://angular.io/guide/reactive-forms), [Template-driven forms](https://angular.io/guide/forms), and [Form Validation](https://angular.io/guide/form-validation)
-  
-Reactive forms provide a model-driven approach to handling form inputs whose values change over time. This guide shows you how to create and update a simple form control, progress to using multiple controls in a group, validate form values, and implement more advanced forms.
+[Reactive Forms](https://angular.io/guide/reactive-forms) provide a model-driven approach to handling form inputs whose values change over time. This guide shows you how to create and update a simple form control, progress to using multiple controls in a group, validate form values, and implement more advanced forms.
 
 ### Step 1: Register the reactive forms module
-To use reactive forms, import **ReactiveFormsModule** from the **@angular/forms** package and add it to **app.module.ts** imports.
+To use reactive forms, import **[ReactiveFormsModule](https://angular.io/api/forms/ReactiveFormsModule)** from the **@angular/forms** package and add it to **app.module.ts** imports.
 ```
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -26,8 +35,8 @@ import { HttpClientModule } from '@angular/common/http';
 export class AppModule { }
 ```
 
-### Step 2: Open the component and declare form and formBuilder
-The **FormControl** class is the basic building block when using reactive forms. To register a single form control, import the **FormControl** into the component... :sunglasses:. Let's import **FormBuilder**, **FormGroup**, and **Validators** classes instead to group these invidual form control into a group.
+### Step 2: Declare form and formBuilder in the Component
+The **[FormControl](https://angular.io/api/forms/FormControl)** class is the basic building block when using reactive forms. To register a single form control, import the **FormControl** into the component... :sunglasses:. Let's import **[FormBuilder](https://angular.io/api/forms/FormBuilder)**, **[FormGroup](https://angular.io/api/forms/FormGroup)**, and **[Validators](https://angular.io/api/forms/Validators)** classes instead to group these invidual form controls.
 In this example, the form consists of 3 controls, namely username, email, and phone. The username and email fields are **required**.
 ```
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -47,9 +56,9 @@ export class ReactiveFormComponent implements OnInit {
 }
 ```
 
-### Step 3: Open the view and construct the form in html
-After we create the control in the component class, we must associate it with a form control element in the template. 
-For each form controls, we also add **error** element right after to hinder the user on submit.
+### Step 3: Construct the form controls in HTML
+After we have declared the controls in the component class, we must associate them with form control elements in the template. 
+For each form controls, we also add **error** elements right after to notice user.
 ```
 <form *ngIf="form" [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-group row">
@@ -57,7 +66,7 @@ For each form controls, we also add **error** element right after to hinder the 
         <div class="col-sm-8">
             <input type="text" class="form-control" formControlName="username" />
             <div class="text-danger" *ngIf="form.controls.username.touched && form.controls.username.errors">
-            <small *ngIf="form.controls.username.errors.required">This username form control is required</small>
+				<small *ngIf="form.controls.username.errors.required">This username form control is required</small>
             </div>
         </div>
     </div>
@@ -66,17 +75,9 @@ For each form controls, we also add **error** element right after to hinder the 
         <div class="col-sm-8">
             <input type="text" class="form-control" formControlName="email" />
             <div class="text-danger" *ngIf="form.controls.email.touched && form.controls.email.errors">
-            <small *ngIf="form.controls.email.errors.required">This email form control is required</small>
-            <small *ngIf="form.controls.email.errors.email">This email form control must be an email</small>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="col-sm-4">Email</label>
-        <div class="col-sm-8">
-            <input type="text" class="form-control" formControlName="email" />
-            <div class="text-danger" *ngIf="form.controls.email.touched && form.controls.email.errors">
-            <small *ngIf="form.controls.email.errors.required">This email form control is required</small>
-            <small *ngIf="form.controls.email.errors.email">This email form control must be an email</small>
+				<small *ngIf="form.controls.email.errors.required">This email form control is required</small>
+				<small *ngIf="form.controls.email.errors.email">This email form control must be an email</small>
+			</div>
         </div>
     </div>
     <div class="form-group row">
@@ -85,9 +86,15 @@ For each form controls, we also add **error** element right after to hinder the 
             <input type="text" class="form-control" formControlName="phone" />
         </div>
     </div>
+	<div class="form-group row">
+        <label class="col-sm-4"></label>
+        <div class="col-sm-8">
+            <button type="submit" class="btn btn-primary">Submit</button
+        </div>
+    </div>
 </form>
 ```
-### Step 4: Get form controls value and submit
+### Step 4: Validate the form before submission
 Before submitting the data to the server, the **Validators** must confirm that all the controls are valid. The **touched** properties after the form control name is to mark if the user omit the field. Otherwise all the form controls are marked invalid at initial stage before user can actually touch the field. Then again, on validating the form, we must touch all field so that they are marked touched.
 ```
 onSummit() {
@@ -113,6 +120,78 @@ onSummit() {
     });
 }
 ```
+
+### Step 5: Implement Select and Radio button
+Let's add form controls to the formGroup that represent the account and gender
+```
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+export class ReactiveFormComponent implements OnInit {
+    form: FormGroup;
+	accounts: ['Free', 'Member', 'Premium'];
+    
+    constructor(private formBuilder: FormBuilder) { }
+    
+    ngOnInit() {
+      this.form = this.formBuilder.group({
+        username: ['', [Validators.required]],
+        email: ['', [Validators.required, Validators.email]],
+		gender: ['male', [Validators.required]],
+        phone: [''],
+		accounts: ['', [Validators.required]],
+    });
+  }
+}
+```
+```
+<form *ngIf="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    ...
+	<div class="form-group row">
+        <label class="col-sm-4">Gender</label>
+        <div class="col-sm-8">
+            <div class="form-check form-check-inline">
+				<input class="form-check-input" type="radio" formControlName="gender" value="male" />
+                <label class="form-check-label">Male</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="gender" value="female" />
+                <label class="form-check-label">Female</label>
+            </div>
+            <div class="text-danger" *ngIf="form.controls.gender.touched && form.controls.gender.errors">
+                <small *ngIf="form.controls.gender.errors.required">This gender control is required</small>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-sm-4">Account</label>
+        <div class="col-sm-8">
+            <select class="form-control" formControlName="account">
+				<option *ngFor="let c of account" [ngValue]="c">{{ c }}</option>
+            </select>
+            <div class="text-danger" *ngIf="form.controls.account.touched && form.controls.account.errors">
+				<small *ngIf="form.controls.account.errors.required">This account control is required</small>
+            </div>
+        </div>
+    </div>
+    ...
+</form>
+```
+Now we can use validate these form controls just as **input[type=text]**
+```
+onSummit() {
+    ...
+    let item = {
+        username = this.form.controls.username.value;
+        email = this.form.controls.email.value;
+		gender = this.form.controls.gender.value;
+        address = this.form.controls.address.value;
+		account = this.form.controls.account.value;
+    }
+    ...
+}
+```
+This concludes the tutorial to use Reactive Form in Angular 6. For other complex input, please look **[Bootstrap widgets](https://ng-bootstrap.github.io/#/getting-started)** or **[Angular Material](https://material.angular.io/)**.
+
 
 </xmp>
 
