@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<title>Use Bootstrap Widgets in Reactive Form in Angular 6</title>
+
+<style>
+	p {
+		text-align: justify !important;
+	}
+
+	.container {
+		font-size: 110% !important;
+	}
+</style>
+
+<xmp theme="united" style="display:none;">
+
+# Use Bootstrap Widgets in Reactive Form in Angular 6
+
+**Note:** Before reading this guide, you must understand **[Reactive Form](https://angular.io/guide/reactive-forms)** and **[Routing & Navigation](https://angular.io/guide/router)**.  
+Please refer to [this guide](https://luehtt.github.io/reference/angular/reactive-form-angular-6)  on how to use Reactive Form.
+  
+  
+[Angular Widgets](https://ng-bootstrap.github.io/#/home) aka **ng-bootstrap** built from the ground up using only Bootstrap 4 CSS with APIs designed for the Angular ecosystem. In this guide, we are going learn how to use its **[Datepicker](https://ng-bootstrap.github.io/#/components/datepicker/overview)** and **[Typeahead](https://ng-bootstrap.github.io/#/components/typeahead/examples)** in ReactiveForm.
+
+### Step 1: Import ng-bootstrap from npm
+Before we can use ng-bootstrap component, we must install it and bootstrap to our node_modules. For Angular 6, install ng-bootstrap version 3.x.x and bootstrap 4.x.x. [Read here](https://ng-bootstrap.github.io/#/getting-started) to find out the installation detail and version
+```
+npm i --save @ng-bootstrap/ng-bootstrap@3.x.x
+npm i --save bootstrap
+```
+Now that we have installed requirement, we can begin to import them to our root **app.module.ts**. However, since most of us rarely put everything on the root module, but import through child modules. Therefore, we better import ng-bootstrap in the module that uses widget components. These components are started with Ngb-. [Here is the list](https://ng-bootstrap.github.io/#/components). In this guide, we import through a child module named **CustomerRouterModule**.  
+Don't forget to import Bootstrap 4 css to root **styles.css** or root **app.component.html**!!!
+```
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Routes, RouterModule } from '@angular/router';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { NgbTypeaheadModule, NgbDatepickerModule, NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
+...
+const routes: Routes = [
+  { path: '', component: CustomerListComponent },
+  { path: ':id', component: CustomerDetailComponent },
+];
+
+@NgModule({
+  imports: [
+    CommonModule, FormsModule, ReactiveFormsModule, NgbTypeaheadModule, NgbDatepickerModule, NgbRatingModule, NgbModalModule,
+    RouterModule.forChild(routes)
+  ],
+  exports: [
+    RouterModule
+  ],
+  declarations: [CustomerListComponent, CustomerDetailComponent]
+})
+export class CustomerRoutingModule { }
+
+```
+
+### Step 2: Declare NgbDatepickerModule in the Component
+**Note:** Consider reading [this guide](https://luehtt.github.io/reference/angular/reactive-form-angular-6) to review our FormControl template.  
+  
+The **[NgbDatepicker](https://ng-bootstrap.github.io/#/components/datepicker/overview)** can be used either inline with NgbDatepicker component or as a popup on any input element with NgbInputDatepicker directive. In this guide, we use NgbDatepicker in a popup.
+```
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgbTypeaheadModule, NgbDatepickerModule, NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
+...
+export class CustomerFormComponent implements OnInit {
+    form: FormGroup;
+
+    constructor(private formBuilder: FormBuilder) { }
+
+    ngOnInit() {
+	  this.form = this.formBuilder.group({
+        username: ['', [Validators.required]],
+        email: ['', [Validators.required, Validators.email]],
+		birthdate: [null],
+        phone: [''],
+    });
+  }
+}
+```
+```
+<form *ngIf="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    ...
+    <div class="form-group row">
+        <label class="col-sm-4">Birthdate</label>
+        <div class="col-sm-8 input-group">
+			<input class="form-control" placeholder="yyyy-mm-dd" formControlName="birthdate" ngbDatepicker #birthdatePicker= "ngbDatepicker" />
+            <div class="input-group-append">
+				<button class="btn btn-outline-secondary calendar" (click)="birthdatePicker.toggle()" type="button"><i class="fas fa-calendar-alt"></i></button>
+            </div>
+        </div>
+    </div>
+    ...
+</form>
+```
+The NgbDatepicker uses different format from Javascript Date object. Therefore, we need to implement two methods to cast date between them. Let's create a class and add these static functions. The **ConvertFromNgbDate** takes NgbDatepicker date and returns that date in string, which we can use to submit to server. The **ConvertToNgbDate** takes a date in string like '2018-08-08' from server and return that date in NgbDatepicker format.
+```
+export function ConvertFromNgbDate(data) {
+  return data.year + "-" + data.month + "-" + data.day;
+}
+
+export function ConvertToNgbDate(datetime) {
+  let date = new Date(datetime);
+  return {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate()
+  };
+}
+```
+With these two functions, we can set and get value from NgbDatepicker easily
+```
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgbTypeaheadModule, NgbDatepickerModule, NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
+...
+export class CustomerFormComponent implements OnInit {
+    form: FormGroup;
+	...
+	setData(data) {
+		this.form.controls.birthdate.setValue(ConvertToNgbDate(data.birthdate))
+		this.form.controls.birthdate.setValue(ConvertToNgbDate(new Date()))
+        this.form.controls.birthdate.setValue(ConvertToNgbDate(new Date('October 10, 2000 12:30:30')))
+    }
+	
+	onSummit() {
+		...
+		let item = {
+			username = this.form.controls.username.value;
+			email = this.form.controls.email.value;
+			address = this.form.controls.address.value;
+			birthdate = ConvertFromNgbDate(this.form.controls.birthdate.value);
+		}
+		...
+  }
+}
+```
+If you ever need more than one NgbDatepicker in a form, just duplicate effortlessly with different control names.
+```
+<form *ngIf="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    ...
+	<div class="form-group row">
+        <label class="col-sm-4">Ringdate</label>
+        <div class="col-sm-8 input-group">
+			<input class="form-control" placeholder="yyyy-mm-dd" formControlName="ringdate" ngbDatepicker #ringdatePicker= "ngbDatepicker" />
+            <div class="input-group-append">
+				<button class="btn btn-outline-secondary calendar" (click)="ringdatePicker.toggle()" type="button"><i class="fas fa-calendar-alt"></i></button>
+            </div>
+        </div>
+    </div>
+	<div class="form-group row">
+        <label class="col-sm-4">Dustdate</label>
+        <div class="col-sm-8 input-group">
+			<input class="form-control" placeholder="yyyy-mm-dd" formControlName="dustdate" ngbDatepicker #dustdatePicker= "ngbDatepicker" />
+            <div class="input-group-append">
+				<button class="btn btn-outline-secondary calendar" (click)="dustdatePicker.toggle()" type="button"><i class="fas fa-calendar-alt"></i></button>
+            </div>
+        </div>
+    </div>
+    ...
+</form>
+```
+
+### Step 3: Declare NgbTypeaheadModule in the Component
+**Note:** Consider reading [this guide](https://luehtt.github.io/reference/angular/reactive-form-angular-6) to review our FormControl template.  
+  
+The **[NgbTypeahead](https://ng-bootstrap.github.io/#/components/typeahead/examples)** is a **input[type=text]** with the ability to auto complete just like **ng2-completer**. In this guide, we use NgbTypeahead open on focus. Note that, we need **[RxJS](https://rxjs-dev.firebaseapp.com/)** for **Observables**.
+```
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgbTypeaheadModule, NgbDatepickerModule, NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
+import { Subject, Observable, merge } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
+...
+export class CustomerFormComponent implements OnInit {
+    form: FormGroup;
+	country: ['US', 'UK', 'France', 'Italy', 'Rusia', 'Germany', 'Japan', 'China'];
+	
+	// view child for NgbTypeahead
+	@ViewChild('countryTypeahead') instance: NgbTypeahead;
+	focus$ = new Subject<string>();
+	click$ = new Subject<string>();
+
+	search = (text$: Observable<string>) => {
+		const debouncedText$ = text$.pipe(
+		debounceTime(200),
+		distinctUntilChanged()
+		);
+		const clicksWithClosedPopup$ = this.click$.pipe(filter(() => !this.instance.isPopupOpen()));
+		const inputFocus$ = this.focus$;
+
+		// this one use map and filter to render searched countries
+		return merge(debouncedText$, inputFocus$, clicksWithClosedPopup$).pipe(
+		  map(term => (term === '' ? this.country : this.country.filter(e => e.toLowerCase().indexOf(term.toLowerCase()) > -1)).slice(0, 10))
+		);
+    }
+
+    constructor(private formBuilder: FormBuilder) { }
+
+    ngOnInit() {
+	  this.form = this.formBuilder.group({
+        username: ['', [Validators.required]],
+        email: ['', [Validators.required, Validators.email]],
+		country: ['', [Validators.required]],
+        phone: [''],
+    });
+  }
+}
+```
+```
+<form *ngIf="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    ...
+    <div class="form-group row">
+        <label class="col-sm-4">Country</label>
+        <div class="col-sm-8">
+			<input class="form-control" formControlName="country" [ngbTypeahead]="search" #countryTypeahead="ngbTypeahead"
+                (focus)="focus$.next($event.target.value)" (click)="click$.next($event.target.value)" />
+        </div>
+    </div>
+    ...
+</form>
+```
+Now that the component and view are set up, the NgbTypeahead is just another **input[type=text]** that we can setValue and get value the same. But how about more than one NgbTypeahead in a form!? Simply dupplicate one and rename **formControlName**, **[ngbTypeahead**], **#="ngbTypeahead"**, **(focus)**, **(click)**... Make sure to rename all of them.
+```
+export class CustomerFormComponent implements OnInit {
+    form: FormGroup;
+	country: ['US', 'UK', 'France', 'Italy', 'Rusia', 'Germany', 'Japan', 'China'];
+	language: ['English', 'Français', 'Italiano', 'Русский', 'Deutsch', '日本語', '中文'];
+	
+	// view child for NgbTypeahead
+	@ViewChild('countryTypeahead') instance: NgbTypeahead;
+	focus$ = new Subject<string>();
+	click$ = new Subject<string>();
+
+	search = (text$: Observable<string>) => {
+		const debouncedText$ = text$.pipe(
+		debounceTime(200),
+		distinctUntilChanged()
+		);
+		const clicksWithClosedPopup$ = this.click$.pipe(filter(() => !this.instance.isPopupOpen()));
+		const inputFocus$ = this.focus$;
+
+		// this one use map and filter to render searched countries
+		return merge(debouncedText$, inputFocus$, clicksWithClosedPopup$).pipe(
+		  map(term => (term === '' ? this.country : this.country.filter(e => e.toLowerCase().indexOf(term.toLowerCase()) > -1)).slice(0, 10))
+		);
+    }
+	
+	// view child 2 for NgbTypeahead
+	@ViewChild('languageTypeahead') instance2: NgbTypeahead;
+	focus2$ = new Subject<string>();
+	click2$ = new Subject<string>();
+
+	search2 = (text$: Observable<string>) => {
+		const debouncedText$ = text$.pipe(
+		debounceTime(200),
+		distinctUntilChanged()
+		);
+		const clicksWithClosedPopup$ = this.click2$.pipe(filter(() => !this.instance2.isPopupOpen()));
+		const inputFocus$ = this.focus2$;
+
+		// this one use map and filter to render searched languages
+		return merge(debouncedText$, inputFocus$, clicksWithClosedPopup$).pipe(
+		  map(term => (term === '' ? this.language : this.language.filter(e => e.toLowerCase().indexOf(term.toLowerCase()) > -1)).slice(0, 10))
+		);
+    }
+
+    constructor(private formBuilder: FormBuilder) { }
+
+    ngOnInit() {
+	  this.form = this.formBuilder.group({
+        username: ['', [Validators.required]],
+        email: ['', [Validators.required, Validators.email]],
+		country: ['', [Validators.required]],
+		language: ['', [Validators.required]],
+        phone: [''],
+    });
+  }
+}
+```
+```
+<form *ngIf="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    ...
+    <div class="form-group row">
+        <label class="col-sm-4">Country</label>
+        <div class="col-sm-8">
+			<input class="form-control" formControlName="country" [ngbTypeahead]="search" #countryTypeahead="ngbTypeahead"
+                (focus)="focus$.next($event.target.value)" (click)="click$.next($event.target.value)" />
+        </div>
+    </div>
+	<div class="form-group row">
+        <label class="col-sm-4">Language</label>
+        <div class="col-sm-8">
+			<input class="form-control" formControlName="language" [ngbTypeahead]="search2" #languageTypeahead="ngbTypeahead"
+                (focus)="focus2$.next($event.target.value)" (click)="click2$.next($event.target.value)" />
+        </div>
+    </div>
+    ...
+</form>
+```
+
+This concludes the tutorial to use Bootstrap Widgets Datepicker and Typeahead in Angular 6 for now. In the future, we will implement more widgets such as **[Rating](https://ng-bootstrap.github.io/#/components/rating/examples)** and **[Timepicker](https://ng-bootstrap.github.io/#/components/timepicker/examples)**. So, don't forget to bookmark this!!!
+
+
+</xmp>
+
+<script src="https://cdn.jsdelivr.net/gh/Naereen/StrapDown.js@master/strapdown.min.js"></script>
+</html>
