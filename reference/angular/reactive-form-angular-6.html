@@ -55,17 +55,27 @@ export class ReactiveFormComponent implements OnInit {
   }
 }
 ```
-To set the value, simply call method **setValue()** or we can set the value to the form in ngOnInit().
+To set the value, simply call method **setValue()** or we can set the value to the form in **ngOnInit()** above.
 ```
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 ...
 export class ReactiveFormComponent implements OnInit {
     form: FormGroup;
     ...
-    setData(data) {
-        this.form.controls.username.setValue(data.username)
-        this.form.controls.email.setValue(data.email)
-        this.form.controls.phone.setValue(data.phone)
+    getData(id) {
+	// this service calling is just example on getting a item  
+		// there must be a service that implements angular httpclient running
+		
+    this.service.get(id).subscribe(res => {
+        // codes on success
+	this.form.controls.username.setValue(res.username)
+        this.form.controls.email.setValue(res.email)
+        this.form.controls.phone.setValue(res.phone)
+    }, err => {
+        // codes on error
+    });
+	
+        
     }
 }
 ```
@@ -125,11 +135,12 @@ onSummit() {
         address = this.form.controls.address.value;
     }
     
-    // this service calling is just example on posting new item
-    this.service.post(item).then(res => {
+    // this service calling is just example on posting new item  
+		// there must be a service that implements angular httpclient running
+		
+    this.service.post(item).subscribe(res => {
         // codes on success
-    })
-    .catch(err => {
+    }, err => {
         // codes on error
     });
 }
