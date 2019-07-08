@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<title>Using HttpClient to GET and POST in Angular 6</title>
+
+<style>
+	p {
+		text-align: justify !important;
+	}
+
+	.container {
+		font-size: 110% !important;
+	}
+</style>
+
+<xmp theme="united" style="display:none;">
+
+# Using HttpClient to GET and POST in Angular 6
+
+The [HttpClient](https://angular.io/guide/http) in @angular/common/http offers a simplified client HTTP api for Angular applications that rests on the XMLHttpRequest interface exposed by browsers. Additional benefits of HttpClient include testability features, typed request and response objects, request and response interception, [Observable](https://rxjs-dev.firebaseapp.com/guide/observable) apis, and streamlined error handling.
+
+
+### Step 1: Generate an HttpClientService that implements HttpClient from Angular
+Before we can use the **HttpClient**, we need to import the **HttpClientModule** to the root **AppModule**. Then, we will make a service that hold all the shared HttlClient functions, named **HttpClientService**.
+If you have no server availuable, you can use fake one at **[JsonPlaceholder](https://jsonplaceholder.typicode.com/)**.
+```
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { throwError } from 'rxjs';
+import { retry } from 'rxjs/operators';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class HttpClientService {
+    private api = 'https://localhost:5001/api/'; // this one for aspnet core
+    private attempt = 3; // this one for retry attempt on error
+
+    constructor(private httpClient: HttpClient) { }
+
+    public get(url: string) {
+        try {
+            return this.httpClient.get(this.api + url).pipe(retry(this.attempt))
+        } catch (e) {
+            this.handleError(e)
+        }
+    }
+
+    public post(url: string, data: object) {
+        try {
+            return this.httpClient.post<any>(this.api + url, data).pipe(retry(this.attempt))
+        } catch (e) {
+            this.handleError(e)
+        }
+    }
+
+    public put(url: string, data: object) {
+        try {
+            return this.httpClient.put<any>(this.api + url, data).pipe(retry(this.attempt))
+        } catch (e) {
+            this.handleError(e)
+        }
+    }
+
+    public delete(url: string) {
+        try {
+            this.httpClient.delete(this.api + url).pipe(retry(this.attempt))
+        } catch (e) {
+        this.handleError(e)
+        }
+    }
+
+    public handleError(error: HttpErrorResponse) {
+        if (error.error instanceof ErrorEvent) {
+            console.error('Error occurred:', error.error.message);
+        } else {
+            console.error('Backend returned code ' + error.status, error.error)
+        }
+        return throwError(
+            'Something bad happened; please try again later.');
+        };
+    }
+}
+```
+Each functions shares the same pattern: a **try catch** for error detection, a **HttpClient** with one of the functions, namely **get**, **post**, **put**, **delete** and the **url**. For the **post** and **put** request, an additional data is required.
+For example, if we have the server running at https://localhost:5001/api that serves the api
+```
+    GET:    https://localhost:5001/api/items      // get all the items
+    GET:    https://localhost:5001/api/items/{id} // get the item that has id = {id}
+    POST:   https://localhost:5001/api/items      // insert new item
+    PUT:    https://localhost:5001/api/items/{id} // update the item that has id = {id}
+    DELETE: https://localhost:5001/api/items/{id} // delete the item that has id = {id}
+```
+Then we can call these functions with these syntax:
+```
+    this.httpClientService.get('items')
+    this.httpClientService.get('items/5')
+    this.httpClientService.post('items', { name: 'Markdown 42X8', price: 10.98 })
+    this.httpClientService.put('items/5', { id: 5, name: 'Markdown 42X8', price: 10.98 })
+    this.httpClientService.delete('items/5')
+```
+However, before we can actually post the data to the server, we must include **[HTTP headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers)** that tells the server what and how the data is sent. Right now, we only need the **Content-Type** to tell the server that we have sent a object in **[JSON](https://en.wikipedia.org/wiki/JSON)** format. So, create a new function that adds the header, then include the headers to each of our request functions. The headers parameter is set at the end of the request function.
+```
+    private initHeaders() {
+        let headers = new HttpHeaders();
+        headers = headers.append('Content-Type', 'application/json');
+        return headers;
+    }
+    
+    public post(url: string, data: object) {
+        try {
+            const headers = this.initHeaders();
+            return this.httpClient.post<any>(this.api + url, data, {headers}).pipe(retry(this.attempt));
+        } catch (e) {
+            this.handleError(e);
+        }
+    }
+```
+You can omit ~~initHeaders()~~ for the requests that do not include data, but as this tutorial continue, let include the headers for all. For most of the time, we will need **'Content-Type'** and **'Authorization: Bearer'** for [JWT](https://jwt.io) authorization.
+
+### Step 2: Generate services for each model
+Now that we have the HttpClientService, we can create as many services for the models as it is needed. For example, our application has basic functions **CRUD** for item, character, skill, weapon, etc... as well as other essential functions such as login, register, etc... That can be a lot but most of the time, we can use Ctrl+C and Ctrl+P to clone them. First, make 3 folders MVC in **app**:
+* **models**: thats hold all the entities
+* **views**: that hold all the html views and their ts controllers aka **components**
+* **services**: that hold the functions to serve request and response between client and server
+
+For list of generate command, [read here](https://angular.io/cli/generate)
+
+Second, let generate required entities in **models** folder. Note that the **[x: string]: any** is to marked the entity has some other properties that cannot be or are too complex to be declared such as **object**. For an example, we generate the **Item** entity that has properties such as **id**, **name**, **price** and **itemCategory** that is an **object** that has properties **id**, **name**. You can either make another entity named **ItemCategory** and use that to declare the property **itemCategory** or use **[x: string]: any** for quick code.
+```
+export class Item {
+    [x: string]: any;
+    id: string;
+    name: string;
+    price: number;
+}
+```
+Third, we generate the services that implement the **HttpClientService** to request or post data in **services** folder. Dont forget to import HttpClientService and entity class to use.
+```
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ItemService {
+    constructor(private httpService: HttpClientService) { }
+    
+    fetch(): Observable<any> {
+        return this.httpService.get('items');
+    }
+    get(id): Observable<any> {
+        return this.httpService.get('items/' + data.id);
+    }
+    post(data): Observable<any> {
+        return this.httpService.post('items', data);
+    }
+    put(data): Observable<any> {
+        return this.httpService.put('items/' + data.id, data);
+    }
+    destroy(id): Observable<any> {
+        return this.httpService.delete('items/' + data.id);
+    }
+    
+    getCategories(): Observable<any> {
+        return this.httpService.get('item-categories');
+    }
+}
+```
+Since these functions are quite the same in each services, you can find a way to merge them using **[Typescript Interface](https://www.typescriptlang.org/docs/handbook/interfaces.html)** somehow. But for now, we have to duplicate one by one because besides those CRUD methods, there are others unique functions for each entities, such as that **getCategories()**.
+
+### Step 3: Generate components for each model
+In this tutorial, I have assumed that we all can render the view from the data perfectly, so the point here how to get the data from the server. Therefore, I will get straight to the core functions right away.
+For the **ItemList** view, we use the **ItemService.fetch()** to get all data from the server
+```
+export class ItemListComponent implements OnInit {
+    data: Item[];
+    constructor(private service: ItemService) { }
+    
+    ngOnInit() {
+        this.service.fetch().subscribe(res => {
+            this.categories = res;
+        }, err => {
+            console.log(err)
+    });
+}
+```
+For the **ItemDetail** view, we add the **ItemService.get()** to get the selected item from the server, the **ItemService.put()** to update data, and the **ItemService.delete()** to delete the item. We also add **ItemService.getCategories()** to get all the item categories for select controls, where we can choose other category for the item. Now that we have two **GET** request to call at the **ngOnInit()**, better group them with **[forkJoin](https://rxjs-dev.firebaseapp.com/api/index/function/forkJoin)**.
+```
+export class ItemListComponent implements OnInit {
+    data: Item;
+    id: string;
+    categories: [];
+    
+    constructor(
+        private formBuilder: FormBuilder,
+        private route: ActivatedRoute,
+        private item: ItemService,
+    ) {}
+    
+    ngOnInit() {
+        this.id = this.route.snapshot.paramMap.get('id');
+        let getBook = this.service.get(this.id);
+        let fetchCategories = this.service.fetchCategories();
+    
+        // res[x] is the result of these requests with x is the ordinal number starting from 0
+        forkJoin([getBook, fetchCategories]).subscribe(res => {
+            this.data = res[0];
+            this.categories = res[1];
+        }, err => {
+            console.log(err)
+        })
+    }
+    
+    clickSummit() {
+        const item = new Book();
+        item.id = this.id;
+        item.name = this.form.controls.name.value;
+        item.price = this.form.controls.price.value;
+        item.categoryId = this.form.controls.categoryId.value;
+        
+        this.service.put(item).subscribe(res => {
+            this.data.name = res.name;
+            this.data.price = res.price;
+            this.data.categoryId = res.categoryId;
+        }, err => {
+            console.log(err)
+        });
+    }
+    
+    clickDelete() {
+        this.service.destroy(this.id).then(res => {
+            this.router.navigate(['/items'])
+        }, err => {
+            console.log(err)
+        });
+    }
+}
+```
+
+This concludes the tutorial to use use Angular HttpClient to GET and POST requests. I hope that you can find this **Rxjs Observable** as easy as **Promise** **[axios](https://github.com/axios/axios)**.
+</xmp>
+
+<script src="https://cdn.jsdelivr.net/gh/Naereen/StrapDown.js@master/strapdown.min.js"></script>
+</html>
+
