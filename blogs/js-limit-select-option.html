@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<title>Limit select options and auto move to selected option</title>
+
+<style>
+	p {
+		text-align: justify !important;
+	}
+
+	.container {
+		font-size: 110% !important;
+	}
+</style>
+
+<xmp theme="united" style="display:none;">
+
+# Limit select options and auto move to selected option
+
+CSS
+```
+.select-container {
+  position: relative;
+  height: 1rem;
+}
+
+.select {
+  position: absolute;
+}
+
+```
+
+HTML
+```
+<div class="select-container">
+  <select class="select" onmousedown="if (this.options.length > 10) { this.size = 10; const option = document.querySelector('option:checked'); if (option) option.scrollIntoView() }"
+    onchange='this.size=0' onblur="this.size=0">
+    <option value="a">apples</option>
+    <option value="b">bananas</option>
+    <option value="c">cucumbers</option>
+    <option value="d">durians</option>
+    <option value="e">eggfruit</option>
+    <option value="f">figs</option>
+    <option value="g">grapes</option>
+    <option value="h">hackberries</option>
+    <option value="j">jackfruits</option>
+    <option value="k">kiwis</option>
+    <option value="l">lemons</option>
+    <option value="m">mangoes</option>
+    <option value="n">nectarines</option>
+    <option value="o">oranges</option>
+    <option value="p">peaches</option>
+    <option value="q">quinces</option>
+    <option value="r">raspberries</option>
+    <option value="s">strawberries</option>
+    <option value="t">tomatoes</option>
+    <option value="w">water melons</option>
+    <option value="y">zucchinies</option>
+  </select>
+</div>
+
+```
+
+</xmp>
+
+<script src="https://cdn.jsdelivr.net/gh/Naereen/StrapDown.js@master/strapdown.min.js"></script>
+</html>
