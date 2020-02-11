@@ -21,9 +21,9 @@ UPDATE table_name SET field_name = TRIM(TRAILING '\n' FROM field_name);
 UPDATE table_name SET field_name = TRIM(TRAILING '\r' FROM field_name);
 UPDATE table_name SET field_name = TRIM(TRAILING '\r\n' FROM field_name);
 ```
-Line #1 is used to trim space characters. Line #2 and later are used to trim all line break characters. If needed to trim other character (such as tab character) use the same pattern as line #2
-[Reddit](https://stackoverflow.com/questions/1504962/how-to-remove-new-line-characters-from-data-rows-in-mysql)
-[Docs](https://www.mysqltutorial.org/mysql-trim)
+Line #1 is used to trim space characters. Line #2 and later are used to trim all line break characters. If needed to trim other character (such as tab character) use the same pattern as line #2   
+[Reddit](https://stackoverflow.com/questions/1504962/how-to-remove-new-line-characters-from-data-rows-in-mysql)   
+[Docs](https://www.mysqltutorial.org/mysql-trim)   
 
 </xmp>
 
