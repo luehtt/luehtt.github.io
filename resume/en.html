@@ -1,176 +1,217 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>Resume | Thanh Toan</title>
+  <meta charset="UTF-8">
+  <title>Resume | Thanh Toan</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito">
-    <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Raleway:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
 </head>
 
 <body>
-<div id="app" class="container my-4">
+  <div id="app" class="container my-4">
     <div class="card">
-        <div class="card-body bg-white p-5">
-            <div class="row mt-4">
-                <div class="col-lg-2 col-md-3 col-sm-4 mb-4 mb-sm-0">
-                    <img class="img-fluid" style="border-radius: 50%" src="img/photo.jpg" alt="photo">
-                </div>
+      <div class="card-body bg-white p-5">
+        <div class="row mt-4">
+          <!-- user image -->
+          <div class="col-lg-2 col-md-3 col-sm-4 mb-4 mb-sm-0">
+            <img class="img-fluid" style="border-radius: 50%" src="img/photo.jpg" alt="photo">
+          </div>
 
-                <div class="col-lg-10 col-md-9 col-sm-8">
-                    <div class="h1 font-bold">{{personal.name}}</div>
-                    <div class="lead mb-2">{{personal.profession}}</div>
-                    <div class="text-justify">{{personal.info}}</div>
-                </div>
-            </div>
-
-            <div class="row mt-4">
-                <div class="col-lg-4">
-                    <div class="mb-4">
-                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-user-tie mr-3"></i>{{personal.header}}
-                        </div>
-                        <div v-if="personal.email" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-envelope mr-3"></i>{{personal.email}}
-                        </div>
-                        <div v-if="personal.phone" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-phone mr-3"></i>{{personal.phone}}
-                        </div>
-                        <div v-if="personal.address" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-map-marker-alt mr-3"></i>{{personal.address}}
-                        </div>
-                        <div v-if="personal.birthdate" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fas fa-birthday-cake mr-3"></i>{{personal.birthdate}}
-                        </div>
-                        <div v-if="personal.github" class="my-2 ml-3 ml-lg-0 clear-fix"><i class="fab fa-github mr-3"></i><a :href="personal.github">{{personal.github}}</a>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
-                                class="fas fa-laptop-code mr-3"></i>{{programming.header}}
-                        </div>
-                        <div v-for="i in programming.data" class="mb-2 clear-fix ml-3 ml-lg-0">{{i.title}}<span
-                                class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
-                                class="fas fa-puzzle-piece mr-3"></i>{{skill.header}}
-                        </div>
-                        <div v-for="i in skill.data" class="mb-2 clear-fix ml-3 ml-lg-0">{{i.title}}<span
-                                class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-8">
-                    <div class="mb-4">
-                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i class="fas fa-flag mr-3"></i>{{goal.header}}
-                        </div>
-                        <div v-for="i in goal.data" class="ml-3 mb-3 clear-fix">
-                            <div class="font-bold">{{i.title}}</div>
-                            <div class="text-justify">{{i.info}}</div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
-                                class="fas fa-briefcase mr-3"></i>{{experience.header}}
-                        </div>
-                        <div v-for="i in experience.data" class="ml-3 mb-3 clear-fix">
-                            <div class="font-bold">{{i.title}}</div>
-                            <div class="text-justify">{{i.info}}</div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <div class="h4 font-bold border-bottom border-2x pb-1 mb-3"><i
-                                class="fas fa-graduation-cap mr-3"></i>{{education.header}}
-                        </div>
-                        <div v-for="i in education.data" class="ml-3 mb-3 clear-fix">
-                            <div class="font-bold">{{i.title}}</div>
-                            <div class="text-justify">{{i.info}}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <!-- header -->
+          <div class="col-lg-10 col-md-9 col-sm-8">
+            <div class="h1 font-bold text-uppercase">{{personal.name}}</div>
+            <div class="lead mb-2">{{personal.profession}}</div>
+            <div class="text-justify">{{personal.info}}</div>
+          </div>
         </div>
+
+        <div class="row mt-4">
+          <div class="col-lg-4">
+            <!-- personal info section -->
+            <div class="mb-4">
+              <div class="h4 font-bold border-bottom border-2x pb-1 mb-3">
+                <i class="fas fa-user-tie mr-3"></i>{{personal.header}}
+              </div>
+              <div v-if="personal.email" class="my-2 ml-3 ml-lg-0 clear-fix">
+                <i class="fas fa-envelope mr-3"></i>{{personal.email}}
+              </div>
+              <div v-if="personal.phone" class="my-2 ml-3 ml-lg-0 clear-fix">
+                <i class="fas fa-phone mr-3"></i>{{personal.phone}}
+              </div>
+              <div v-if="personal.address" class="my-2 ml-3 ml-lg-0 clear-fix">
+                <i class="fas fa-map-marker-alt mr-3"></i>{{personal.address}}
+              </div>
+              <div v-if="personal.birthdate" class="my-2 ml-3 ml-lg-0 clear-fix">
+                <i class="fas fa-birthday-cake mr-3"></i>{{personal.birthdate}}
+              </div>
+              <div v-if="personal.github" class="my-2 ml-3 ml-lg-0 clear-fix">
+                <i class="fab fa-github mr-3"></i><a :href="personal.github">{{personal.github}}</a>
+              </div>
+            </div>
+
+            <!-- overview section -->
+            <div class="mb-4">
+              <div class="h4 font-bold border-bottom border-2x pb-1 mb-3">
+                <i class="fas fa-chalkboard mr-3"></i>{{programming.header}}
+              </div>
+              <div v-for="i in programming.data" class="clear-fix ml-3 ml-lg-0">{{i.title}}
+                <span class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span>
+              </div>
+            </div>
+
+            <!-- skills section -->
+            <div class="mb-4">
+              <div class="h4 font-bold border-bottom border-2x pb-1 mb-3">
+                <i class="fas fa-puzzle-piece mr-3"></i>{{skill.header}}
+              </div>
+              <div v-for="i in skill.data" class="clear-fix ml-3 ml-lg-0">{{i.title}}
+                <span class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span>
+              </div>
+            </div>
+
+            <!-- technical section -->
+            <div class="mb-4">
+              <div class="h4 font-bold border-bottom border-2x pb-1 mb-3">
+                <i class="fas fa-laptop-code mr-3"></i>{{technical.header}}
+              </div>
+              <div v-for="i in technical.data" class="clear-fix ml-3 ml-lg-0">{{i.title}}
+                <span class="float-right" v-for="j in i.rate"><i class="fas fa-star text-warning"></i></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-8">
+            <!-- goals section -->
+            <div class="mb-4">
+              <div class="h4 font-bold border-bottom border-2x pb-1 mb-3">
+                <i class="fas fa-flag mr-3"></i>{{goal.header}}
+              </div>
+              <div v-for="i in goal.data" class="mb-3 clear-fix">
+                <div class="font-bold">{{i.title}}</div>
+                <div class="text-justify">{{i.info}}</div>
+              </div>
+            </div>
+
+            <!-- experience section -->
+            <div class="mb-4">
+              <div class="h4 font-bold border-bottom border-2x pb-1 mb-3">
+                <i class="fas fa-briefcase mr-3"></i>{{experience.header}}
+              </div>
+              <div v-for="i in experience.data" class="mb-3 clear-fix">
+                <div class="mb-2"><strong>{{i.title}}</strong></div>
+                <div v-for="info in i.info" class="ml-3 ml-lg-0 text-justify">{{info}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 </body>
 
 <script>
-    let app = new Vue({
-        el: '#app',
-        data: {
-            path: window.location.pathname,
-            personal: {
-                header: 'Personal Info',
-                name: 'Huynh Thanh Toan',
-                info: 'Hello, I am a graduated student from An Giang University, major Information Technology. I have take parts in many programming projects from desktop. The more challenging the project, the more interesting it brings. I specialized interested in web development, UI/UX designs, latest technologies. At the moment, I am looking for a job related to programming.',
-                profession: 'Fresher Web Programmer',
-                address: '19E4, Tran Huy Lieu, My Quy, Long Xuyen city, An Giang',
-                phone: '034 475 4599',
-                email: 'thanhtoan.inu@gmail.com',
-                github: 'github.com/luehtt'
-            },
-            goal: {
-                header: 'Goal',
-                data: [
-                    {
-                        title: '',
-                        info: 'After graduated from university, a job related to web or mobile programming is my first goal so that I can experience business work environment. I do not intend to learn more about web and mobile programming, but also about latest technology such as IOT and Blockchain to become more and more adept. Proficient programmer that can join any projects and complete any task is my long-term goal. Besides, I like to make personal app that help me more productivity and learn Japanese more so that I can use it as good as my English. '
-                    },
-                ]
-            },
-            programming: {
-                header: 'Programming',
-                data: [
-                    {title: 'Data structure', rate: 3},
-                    {title: 'Data analysis', rate: 4},
-                    {title: 'PHP / Laravel', rate: 4},
-                    {title: 'JSP / Spring Boot', rate: 4},
-                    {title: 'Node.js / Adonis.js', rate: 4}
-                ]
-            },
-            skill: {
-                header: 'Skills',
-                data: [
-                    {title: 'Self study', rate: 5},
-                    {title: 'Work Under pressure', rate: 3},
-                    {title: 'Group working', rate: 4},
-                    {title: 'Adaptability & Flexibility', rate: 4},
-                    {title: 'Analytical & Solving', rate: 4}
-                ]
-            },
-            experience: {
-                header: 'Experience',
-                data: [
-                    {
-                        title: '2013-2014',
-                        info: 'Work at local computer store that repairs hardware, installs network, sells component.'
-                    },
-                    {title: '2015-2019', info: 'Study at An Giang University, major Information Technology'},
-                ]
-            },
-            education: {
-                header: 'Education',
-                data: [
-                    {title: 'First year', info: 'Java, JavaFX, Data structure,  Java collections, Lambda'},
-                    {title: 'Second year', info: 'C#, WPF, Data analysis, DBMS, ORM, MVVM pattern'},
-                    {title: 'Third year', info: 'PHP, Laravel, Bootstrap, Vue.js, MVC pattern'},
-                    {title: 'Last year', info: 'RESTful, Single page application, JSP, Spring Boot, Node.js, Adonis.js'},
-                ]
-            },
-            lightColors: ['#ff4444', '#4285f4', '#00c851', '#2bbbad', '#ffbb33', '#33b5e5', '#aa66cc', '#37474f'],
-            colors: ['#cc0000', '#0d47a1', '#007e33', '#00695c', '#ff8800', '#0099cc', '#9933cc', '#263238'],
-        },
-    })
+  let app = new Vue({
+    el: '#app',
+    data: {
+      path: window.location.pathname,
+      personal: {
+        header: 'Personal',
+        name: 'Huynh Thanh Toan',
+        info: 'A developer passionate about web development, anything related, from building database, establishing REST services to designing interfaces. Always practicing and learning new technologies. Always try my best to satisfy user demand. And more important, looking for a job, related to web programming.',
+        profession: 'Junior Full-stack Programmer',
+        address: '82/12 Nguyen Xi, Ward 26, Binh Thanh district, HCM city',
+        phone: '034 475 4599',
+        email: 'thanhtoan.inu@gmail.com',
+        github: 'github.com/luehtt'
+      },
+      goal: {
+        header: 'Goal',
+        data: [
+          {
+            title: '',
+            info: 'After a year working, I have realized that my interest in web development has not yet die out but has been growing up. The more time I spent in development, the more urge I have to meet user experience and requirement. My goal has been sharpened: to make applications swift, clean, efficient, responsive, that myself can be proud of. Besides, I also have interest in mobile development. Might I take a look at it if there is a chance even though I have no solid grasp.'
+          },
+        ]
+      },
+      programming: {
+        header: 'Overview',
+        data: [
+          { title: 'Data structure', rate: 3 },
+          { title: 'Back end', rate: 3 },
+          { title: 'Front end', rate: 4 },
+          { title: 'Design UX/UI', rate: 3 }
+        ]
+      },
+      skill: {
+        header: 'Skills',
+        data: [
+          { title: 'Self-study', rate: 5 },
+          { title: 'Group work', rate: 3 },
+          { title: 'Adaptability', rate: 4 },
+          { title: 'Analytical', rate: 4 },
+          { title: 'English', rate: 4 }
+        ]
+      },
+      technical: {
+        header: 'Technical',
+        data: [
+          { title: 'ASP.NET Core, EF Core', rate: 0 },
+          { title: 'Node.js, AdonisJs', rate: 0 },
+          { title: 'Angular 8', rate: 0 },
+          { title: 'React 16.8', rate: 0 },
+          { title: 'MySQL, PostgreSQL', rate: 0 },
+          { title: 'Bootstrap 4, SCSS, ES6', rate: 0 }
+        ]
+      },
+      experience: {
+        header: 'Experience',
+        data: [
+          {
+            title: '2015-2019: An Giang University (AGU)',
+            info: [
+              'Learnt solid foundation of algorithm and data structure',
+              'Learnt .NET application, JavaFX application, ASP.NET, PHP Laravel, Nodejs, and Front-end development'
+            ]
+          },
+          {
+            title: 'Project participated:',
+            info: [
+              'iLearning – a web application for online study writing in AdonisJS and Vue.js for AGU Center of Language'
+            ]
+          },
+          {
+            title: '2019-2020: CORE Support VN Co Ltd. (Valor Holdings Co Ltd.) Full stack developer',
+            info: [
+              'Used ASP.NET core and Store procedure in MySQL for developing REST services',
+              'Used Angular 8 for developing responsive website',
+              'Managed SCSS to support templates',
+            ]
+          },
+          {
+            title: 'Project participated:',
+            info: [
+              'CORE Support Attendance Management System: responsible for asset and task management',
+              '事故・事件管理システム (Accident Incident Control System): responsible for the main workflow from users to insurance persons in charge to managers',
+              'Memorise – a personal, pending for published, project for learning other language lexicon, writing in AdonisJS, React 16.8, and PostgreSQL'
+            ]
+          },
+        ]
+      },
+      lightColors: ['#ff4444', '#4285f4', '#00c851', '#2bbbad', '#ffbb33', '#33b5e5', '#aa66cc', '#37474f'],
+      colors: ['#cc0000', '#0d47a1', '#007e33', '#00695c', '#ff8800', '#0099cc', '#9933cc', '#263238'],
+    },
+  })
 </script>
 
 </html>
